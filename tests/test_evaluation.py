@@ -18,7 +18,7 @@ class evaluate_ytest(unittest.TestCase):
         for i in range(1,self.numdata):
             self.SeriePrueba.addValues(yop[i], yup[i], ydw[i], ycl[i])
 
-        y = evaluate_y(self.SeriePrueba, 0.003, 0)
+        y = evaluate_y(self.SeriePrueba, 0.003, 0, DEBUG=True)
         self.assertEqual(1, y)
             
         
@@ -31,7 +31,7 @@ class evaluate_ytest(unittest.TestCase):
         for i in range(1,self.numdata):
             self.SeriePrueba.addValues(yop[i], yup[i], ydw[i], ycl[i])
 
-        y = evaluate_y(self.SeriePrueba, 0.003, 0)
+        y = evaluate_y(self.SeriePrueba, 0.003, 0, DEBUG=True)
         self.assertEqual(2, y)
             
     def test_evaluate_y_aside(self):
@@ -43,6 +43,6 @@ class evaluate_ytest(unittest.TestCase):
         for i in range(1,self.numdata):
             self.SeriePrueba.addValues(yop[i], yup[i], ydw[i], ycl[i])
 
-        y = evaluate_y(self.SeriePrueba, 0.003, 0)
+        y = evaluate_y(self.SeriePrueba, 0.003, 0, DEBUG=True)
         self.assertEqual(0, y)
             

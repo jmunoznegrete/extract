@@ -2,13 +2,8 @@
 from datetime import date, datetime, time, timedelta
 from time import gmtime, strftime, strptime
 from evaluation import evaluate_y
-
-## leo fichero de configuracion con:
-class cfg(object):
-    SPREAD = 0.00015                ## in pips / 10000
-    DELAY_INI_ORDER = 780   ## Max number fo M1 bars (from 23:00 to 12:00 am)
-    EXPIRE_ORDER_TIME = 480     ## Maximum time to expire the order (M1 bars)
-    EXPECTED_MOVEMENT = 0.0030      ## in pips / 10000
+from config import cfg
+from y_result import y_result, yvalues
 
 ## Defino estados:
 ##  * Leyendo lista para las compras (a partir de las 23:00).
@@ -20,6 +15,11 @@ class status(object):
         a=strptime("01 Jan 2000 11:00", "%d %b %Y %H:%M")
         self.dateFirstBar = datetime(a[0], a[1], a[2], a[3], a[4])
         self.oldBar = datetime(a[0], a[1], a[2], a[3], a[4])
+        self.datecapture = ""
+    def set_date_capture(self, value):
+        self.datecapture = value
+    def get_date_capture(self):
+        return(self.datecapture)
 
 ##---------------------------------------------
 ## y_result is the class to be stored as a result of the selected criteria
@@ -27,18 +27,6 @@ class status(object):
 ## the date associated to that value is stored in another list with the
 ## same index value to identify the result
 
-class y_result(object):
-    def __init__(self, name):
-        self.date_result = []
-        self.y = []
-        self.filename = name
-    def app(self, date_insert, y_value):
-        self.date_result.append(date_insert)
-        self.y.append(y_value)
-    def get_value(self, i):
-        return self.date_result[i], self.y[i]
-    def toFile(self):
-        pass
 
 class day_Serie(object):
     def __init__(self,ValueOpen, ValueHigh, ValueLow, ValueClose):
@@ -61,6 +49,7 @@ class day_Serie(object):
 ## --------------------------------------------------------------
     ## 
 if __name__ == "__main__":
+
     vector_y = y_result('rawData/yVector')
     
     with open('rawData/EURUSDM1.csv', 'r+') as fin:
@@ -87,6 +76,7 @@ if __name__ == "__main__":
                 
                 ## date of first bar is already stored in current_date
                 ## and values OHLC stored as first values
+                status_eur.set_date_capture(valores[0])
                 status_eur.CAPTURING_FIRST_BAR = False
                 tmpDaySerie = day_Serie(valores[1], valores[2], 
                                         valores[3], valores[4])
@@ -108,8 +98,8 @@ if __name__ == "__main__":
                     y = evaluate_y(tmpDaySerie, 
                                     cfg.EXPECTED_MOVEMENT,
                                     cfg.SPREAD)
-                    print "Resultado = ", y
-                    vector_y.app(valores[0], y)
+                    print "Resultado = ", status_eur.get_date_capture(), y
+                    vector_y.app(status_eur.get_date_capture(), y)
                     status_eur.CAPTURING_FIRST_BAR = True
                     break
     

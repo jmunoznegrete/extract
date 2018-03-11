@@ -50,7 +50,7 @@ class day_Serie(object):
     ## 
 if __name__ == "__main__":
 
-    vector_y = y_result('rawData/yVector')
+    vector_y = y_result('rawData/yVector.csv')
     
     with open('rawData/EURUSDM1.csv', 'r+') as fin:
         status_eur = status()
@@ -70,8 +70,8 @@ if __name__ == "__main__":
                                         tmp_date[3], tmp_date[4], tmp_date[5])
     
                 ## if Friday or Saturday skip these values
-                if current_date.weekday() == 5 or \
-                    current_date.weekday() ==6:
+                if current_date.weekday() == 4 or \
+                    current_date.weekday() ==5:
                     continue
                 
                 ## date of first bar is already stored in current_date
@@ -89,8 +89,8 @@ if __name__ == "__main__":
                 current_time = datetime(tmp_date[0], tmp_date[1], tmp_date[2],
                                         tmp_date[3], tmp_date[4], tmp_date[5])
     
-                if (current_time < 
-                        current_date + timedelta(minutes=cfg.EXPIRE_ORDER_TIME)):
+                if (current_time < \
+                       current_date + timedelta(minutes=cfg.EXPIRE_ORDER_TIME)):
                     tmpDaySerie.addValues(valores[1], valores[2],
                                             valores[3], valores[4])    
     
@@ -98,13 +98,13 @@ if __name__ == "__main__":
                     y = evaluate_y(tmpDaySerie, 
                                     cfg.EXPECTED_MOVEMENT,
                                     cfg.SPREAD)
-                    print "Resultado = ", status_eur.get_date_capture(), y
+                    ## print "Resultado = ", status_eur.get_date_capture(), y
                     vector_y.app(status_eur.get_date_capture(), y)
                     status_eur.CAPTURING_FIRST_BAR = True
-                    break
+                    ##if vector_y.len() > 10:
+                    ##    break
     
-    ##tmpDaySerie.toFile()
-    ##vector_y.toFile()
+    vector_y.toFile()
                 
     
     ## Iteracion hasta final de fichero:

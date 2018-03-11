@@ -8,8 +8,14 @@ class y_result(object):
         self.y.append(y_value)
     def get_value(self, i):
         return self.date_result[i], self.y[i]
+    def len(self):
+        return len(self.y)
     def toFile(self):
-        pass
+        with open(self.filename,'w') as fout:
+            print "printing y..."
+            for i in range(len(self.y)):
+                fout.write(self.date_result[i]+','+str(self.y[i])+'\n')
+
 
 class yvalues(object):
     BUY =1

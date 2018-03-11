@@ -6,8 +6,10 @@ def evaluate_y(DaySerie, movement, spread):
     down_limit = DaySerie.Open[0] - movement
     down_limit_serie=[down_limit for i in range(DaySerie.len())]
 
-    upper_comparison = upper_limit < DaySerie.Low
-    down_comparison = down_limit > DaySerie.High
+    upper_comparison = \
+        [upper_limit_serie[i] < DaySerie.Low[i] for i in range(DaySerie.len())]
+    down_comparison = \
+        [down_limit_serie[i] > DaySerie.High[i] for i in range(DaySerie.len())]
 
     x = [i for i in range(DaySerie.len())]
 
@@ -18,8 +20,11 @@ def evaluate_y(DaySerie, movement, spread):
     plt.show()
 
     if upper_comparison > down_comparison:
+        print "BUY SIGNAL"
         return 1
     if upper_comparison < down_comparison:
+        print "SELL SIGNAL"
         return 2
-    
+
+    print "STAY ASIDE"
     return(0)

@@ -1,13 +1,14 @@
 ## importo funciones necesarias
 from datetime import date, datetime, time, timedelta
 from time import gmtime, strftime, strptime
+from evaluation import evaluate_y
 
 ## leo fichero de configuracion con:
 class cfg(object):
-    SPREAD = 1.5                ## in pips
+    SPREAD = 0.00015                ## in pips / 10000
     DELAY_INI_ORDER = 780   ## Max number fo M1 bars (from 23:00 to 12:00 am)
     EXPIRE_ORDER_TIME = 480     ## Maximum time to expire the order (M1 bars)
-    EXPECTED_MOVEMENT = 30      ## in pips
+    EXPECTED_MOVEMENT = 0.0030      ## in pips / 10000
 
 ## Defino estados:
 ##  * Leyendo lista para las compras (a partir de las 23:00).
@@ -20,8 +21,6 @@ class status(object):
         self.dateFirstBar = datetime(a[0], a[1], a[2], a[3], a[4])
         self.oldBar = datetime(a[0], a[1], a[2], a[3], a[4])
 
-def evaluate_y(DaySerie, movement, spread):
-    return(1)
 ##---------------------------------------------
 ## y_result is the class to be stored as a result of the selected criteria
 ## with this algorithm y is a list of values between 0 and 2
@@ -49,19 +48,21 @@ class day_Serie(object):
         self.Close=[]
         self.addValues(ValueOpen, ValueHigh, ValueLow, ValueClose)
     def addValues(self, ValueOpen, ValueHigh, ValueLow, ValueClose):
-        self.Open.append(ValueOpen)
-        self.High.append(ValueHigh)
-        self.Low.append(ValueLow)
-        self.Close.append(ValueClose)
+        self.Open.append(float(ValueOpen))
+        self.High.append(float(ValueHigh))
+        self.Low.append(float(ValueLow))
+        self.Close.append(float(ValueClose))
+    def len(self):
+        return len(self.Open)
     def toFile(self):
         print "printing DaySerie..."
         for i in range(len(self.Open)):
             print "i=",self.Open[i]
 ## --------------------------------------------------------------
 ## 
-vector_y = y_result('../rawData/yVector')
+vector_y = y_result('rawData/yVector')
 
-with open('../rawData/EURUSDM1.csv', 'r+') as fin:
+with open('rawData/EURUSDM1.csv', 'r+') as fin:
     status_eur = status()
     i = 0
     for line in fin:
@@ -106,12 +107,13 @@ with open('../rawData/EURUSDM1.csv', 'r+') as fin:
                 y = evaluate_y(tmpDaySerie, 
                                 cfg.EXPECTED_MOVEMENT,
                                 cfg.SPREAD)
+                print "Resultado = ", y
                 vector_y.app(valores[0], y)
                 status_eur.CAPTURING_FIRST_BAR = True
                 break
 
-tmpDaySerie.toFile()
-vector_y.toFile()
+##tmpDaySerie.toFile()
+##vector_y.toFile()
             
 
 ## Iteracion hasta final de fichero:

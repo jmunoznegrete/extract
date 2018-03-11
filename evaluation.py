@@ -11,11 +11,6 @@ def evaluate_y(DaySerie, movement, spread):
 
     x = [i for i in range(DaySerie.len())]
 
-    print "*****************", len(DaySerie.High), len(x)
-
-    print x[0:10]
-    print DaySerie.High[0:10]
-
     plt.plot(x, DaySerie.High)
     plt.plot(x, DaySerie.Low)
     plt.plot(x, upper_limit_serie)

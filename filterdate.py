@@ -24,8 +24,11 @@ with open(FileIn, 'r') as fin:
             if (float(line.split(',')[5]) == 0.0):
                 continue
             indice = line.find('.000 GMT')
-            lineout = line[0:indice]+line[indice+13:]+'\n'
-            print lineout[:-1]
+            if (indice > 0):
+                lineout = line[0:indice]+line[indice+13:]+'\n'
+            else:
+                lineout = line + '\n'
+            ##print lineout[:-1]
             fout.write(lineout)
 
 print 'Done with ', FileIn,' and ', FileOut

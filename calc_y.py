@@ -80,6 +80,7 @@ if __name__ == "__main__":
                 status_eur.CAPTURING_FIRST_BAR = False
                 tmpDaySerie = day_Serie(valores[1], valores[2], 
                                         valores[3], valores[4])
+                tmpOpen = valores[1]
     
             else:
                 ## date of first bar is already stored in current_date
@@ -93,13 +94,16 @@ if __name__ == "__main__":
                        current_date + timedelta(minutes=cfg.EXPIRE_ORDER_TIME)):
                     tmpDaySerie.addValues(valores[1], valores[2],
                                             valores[3], valores[4])    
-    
+                    tmpClose = valores[4] 
                 else:
                     y = evaluate_y(tmpDaySerie, 
                                     cfg.EXPECTED_MOVEMENT,
                                     cfg.SPREAD)
                     ## print "Resultado = ", status_eur.get_date_capture(), y
-                    vector_y.app(status_eur.get_date_capture(), y)
+                    vector_y.app(status_eur.get_date_capture(), 
+                                 y, 
+                                 tmpOpen,
+                                 tmpClose)
                     status_eur.CAPTURING_FIRST_BAR = True
                     ##if vector_y.len() > 10:
                     ##    break

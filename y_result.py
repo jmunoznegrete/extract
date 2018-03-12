@@ -3,9 +3,13 @@ class y_result(object):
         self.date_result = []
         self.y = []
         self.filename = name
-    def app(self, date_insert, y_value):
+        self.PrecioOpen = []
+        self.PrecioClose = []
+    def app(self, date_insert, y_value, PrecioOpen, PrecioClose):
         self.date_result.append(date_insert)
         self.y.append(y_value)
+        self.PrecioOpen.append(PrecioOpen)
+        self.PrecioClose.append(PrecioClose)
     def get_value(self, i):
         return self.date_result[i], self.y[i]
     def len(self):
@@ -14,7 +18,8 @@ class y_result(object):
         with open(self.filename,'w') as fout:
             print "printing y..."
             for i in range(len(self.y)):
-                fout.write(self.date_result[i]+','+str(self.y[i])+'\n')
+                fout.write(self.date_result[i]+','+str(self.y[i])+','+
+                    self.PrecioOpen[i]+','+self.PrecioClose[i]+'\n')
 
 
 class yvalues(object):

@@ -1,17 +1,26 @@
+import sys
+
 from bot.indicadores.TimeS import SerieEscalar, TimeSerie, Barra, Tick
 from bot.indicadores.iBW import iBW
+from extract.auxiliares import split_path
 
 
 class SerieDate(object):
     def __init__(self):
         self.listDates = []
 
-    def insert_date(self, fecha):
+    def addDate(self, fecha):
         if len(self.listDates)==0:
             self.listDates.append(fecha)
         else:
             self.listDates.append(self.listDates[0])
             self.listDates[0] = fecha
+
+    def length(self):
+        return len(self.listDates)
+
+    def __getitem__(self, index):
+        return(self.listDates[index])
 
     def toFile(self, fileOut):
         pass
@@ -19,8 +28,8 @@ class SerieDate(object):
 class const(object):
     MIN_DATA = 40
 
-if __name__ == "main":
-    
+if __name__ == "__main__":
+
     Precio = TimeSerie('D1')
     Fechas = SerieDate()
     SerieAC = SerieEscalar()
@@ -28,7 +37,9 @@ if __name__ == "main":
 
     cursorLinea=0
 
-    with open('rawData/EURUSDM1.csv', 'r+') as fileIn:
+    bdata_path, FileIn = split_path(sys.argv[1])
+
+    with open(bdata_path+FileIn, 'r+') as fileIn:
         for line in fileIn:
             if cursorLinea == 0:
                 cursorLinea = cursorLinea + 1
@@ -36,18 +47,21 @@ if __name__ == "main":
 
             valores = line.split(',')
             val = [float(valores[i]) for i in range(1,5)]
+            val.insert(0, 0.0)
+            cursorLinea = cursorLinea + 1
 
             if cursorLinea < const.MIN_DATA:
-                Precio.append(Barra(val[1], val[2], val[3], val[4]))
+                Precio.addBarra(Barra(val[1], val[2], val[3], val[4]))
                 continue
 
-            Fechas.append(valores[0])
-            Precio.append(Barra(val[1], val[1], val[1], val[1]))
+            Fechas.addDate(valores[0])
+            Precio.addBarra(Barra(val[1], val[1], val[1], val[1]))
             
             if cursorLinea == const.MIN_DATA:
                 ibw = iBW(Precio)
 
-            SerieAC0.append(ibw['AC'][0])
+            ibw.update()
+            SerieAC0.appendValue(ibw['AC'][0])
             t1 = Tick(val[2], 0.0, "12.01.00", "EURUSD")
             Precio.setCur(t1)
             t1 = Tick(val[3], 0.0, "12.01.00", "EURUSD")
@@ -56,13 +70,21 @@ if __name__ == "main":
             Precio.setCur(t1)
 
             ibw.update()
-            SerieAC.append(ibw['AC'][0])
+            SerieAC.appendValue(ibw['AC'][0])
                 
+    print "Longitud: Fecha, SerieAC ", Fechas.length(), SerieAC.length()
 
-    with open('rawData/features.csv', 'w') as fileOut:
-        for i in range(len(Fechas)):
-            cadena = Fechas[-i] + ',' + str(SerieAC0[i]) + ',' + \
-                    str(SerieAC[i]) + '\n'
+    ListaFeatures=[]
+    for i in range(Fechas.length() - const.MIN_DATA):
+        cadena = Fechas[-i] + ',' + str(SerieAC0[-i]) + ',' + \
+                str(SerieAC[-i-7]) + ',' +\
+                str(SerieAC[-i-14]) + ',' +\
+                str(SerieAC[-i-21]) + \
+                '\n'
 
-            fileOut.write(cadena)
+        ListaFeatures.append(cadena)
+
+    with open(bdata_path+'features.csv', 'w') as fileOut:
+        for i in range(len(ListaFeatures)):
+            fileOut.write(ListaFeatures[-i-1])
     
